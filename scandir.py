@@ -582,7 +582,10 @@ elif sys.platform.startswith(('linux', 'darwin', 'sunos5')) or 'bsd' in sys.plat
                     name = entry.d_name
                     if name not in (b'.', b'..'):
                         if not is_bytes:
-                            name = name.decode(file_system_encoding)
+                            try:
+                                name = name.decode(file_system_encoding)
+                            except:
+                                name = "AsciiDecodeError"
                         yield PosixDirEntry(path, name, entry.d_type, entry.d_ino)
             finally:
                 if closedir(dir_p):
