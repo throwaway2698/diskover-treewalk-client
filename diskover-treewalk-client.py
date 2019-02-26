@@ -114,10 +114,14 @@ def socket_worker(conn):
 def spider_worker():
 	while True:
 		item = q_spider.get()
-		s = os.lstat(item)
-		mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime = s
-		blocks = s.st_blocks
-		q_spider_meta.put((item, (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime, blocks)))
+		try:
+			s = os.lstat(item)
+			mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime = s
+			blocks = s.st_blocks
+			q_spider_meta.put((item, (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime, blocks)))
+		except:
+			print("Warning: failed os.lstat on", item)
+			pass
 		q_spider.task_done()
 
 
@@ -295,9 +299,9 @@ if __name__ == "__main__":
 /\ \L\ \ \ \/\__, `\\\ \ \\\`\ /\ \L\ \ \ \_/ |/\  __/\ \ \/   /rr
 \ \___,_\ \_\/\____/ \ \_\ \_\ \____/\ \___/ \ \____\\\ \\_\\  *\))_
  \/__,_ /\/_/\/___/   \/_/\/_/\/___/  \/__/   \/____/ \\/_/
-				  
+
 	  TCP Socket Treewalk Client v%s
-	  
+
 	  https://shirosaidev.github.io/diskover
 	  "It's time to see what lies beneath."
 	  Support diskover on Patreon or PayPal :)\033[0m
